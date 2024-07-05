@@ -39,14 +39,15 @@ def inclusao():
   if token == "":
     print("Erro... Você deve logar-se primeiro")
     return
+  
+  print()
 
   data_marcada = input("Data..: ")
   horario = input("Horário: ")
-  id_usuario = 1
   id_quadra = 1
 
   response = requests.post("http://localhost:3000/agendamentos", 
-    json={"data_marcada": data_marcada, "horario": horario, "id_usuario": id_usuario, "id_quadra": id_quadra},
+    json={"data": data_marcada, "hora": horario, "quadra_id": id_quadra},
     headers={"Authorization": f"Bearer {token}"}
   )
   
@@ -56,7 +57,7 @@ def inclusao():
     dados = response.json()
     print(f"Ok... Agendamento cadastrado com o código {dados['id']}")
   else:
-    print("erro" + data_marcada, horario, id_usuario, id_quadra)
+    print("erro" + data_marcada, horario, id_quadra)
     
 def listagem():
   titulo("Listagem de Agendamentos")
