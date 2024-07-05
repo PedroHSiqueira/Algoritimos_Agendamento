@@ -71,7 +71,7 @@ def listagem():
   dados = response.json()
 
   for linha in dados:
-    print(f"{linha['id']} - {linha['data']} - {linha['hora']}")
+    print(f"Código: {linha['id']} - Data de Reserva: {linha['data']} - Horário: {linha['hora']}")
     
 def alteracao():
   titulo("Alteração de Agendamento")
@@ -83,11 +83,10 @@ def alteracao():
   id = int(input("Código do Agendamento: "))
   data_marcada = input("Data..: ")
   horario = input("Horário: ")
-  id_usuario = 1
   id_quadra = 1
 
   response = requests.put(f"http://localhost:3000/agendamentos/{id}", 
-    json={"data_marcada": data_marcada, "horario": horario, "id_usuario": id_usuario, "id_quadra": id_quadra},
+    json={"data": data_marcada, "hora": horario, "quadra_id": id_quadra},
     headers={"Authorization": f"Bearer {token}"}
   )
 
@@ -115,22 +114,25 @@ def exclusao():
     print("Erro... Agendamento não encontrado")
 
 def grafico():
-  titulo("Gráfico comparando Raças e Faixas Etárias")
+  titulo("Gráfico de Quadras")
 
-  raca1 = input("1ª Raça: ")
-  raca2 = input("2ª Raça: ")
-  raca3 = input("3ª Raça: ")
+  esporte1 = input("1ª Esporte: ")
+  esporte2 = input("2ª Esporte: ")
+  
+  if esporte1 == "volei":
+    esporte1 = 1
+  if esporte2 == "futebol":
+    esporte2 = 2
 
   # (): significa que é uma tupla (característica: é imutável)
-  faixas = ("Até 5 anos", "Entre 6 e 10 anos", "Acima de 10 anos")
+  faixas = ("Volei", "Futebol", "Teste")
   # {}: significa que é um dicionário (chave: valor)
-  animais = {
-      raca1: [0, 0, 0],
-      raca2: [0, 0, 0],
-      raca3: [0, 0, 0],
+  esportes = {
+      esporte1: [0],
+      esporte2: [0]
   }
 
-  response = requests.get("http://localhost:3000/animais")
+  response = requests.get("http://localhost:3000/quadras")
 
   if response.status_code != 200:
     print("Erro... Não foi possível conectar com a API")
@@ -141,27 +143,10 @@ def grafico():
 #  print(dados)
 
   for linha in dados:
-    if linha['raca'] == raca1:
-      if linha['idade'] <= 5:
-        animais[raca1][0] += 1
-      elif linha['idade'] <= 10:
-        animais[raca1][1] += 1          
-      else:
-        animais[raca1][2] += 1   
-    elif linha['raca'] == raca2:
-      if linha['idade'] <= 5:
-        animais[raca2][0] += 1
-      elif linha['idade'] <= 10:
-        animais[raca2][1] += 1          
-      else:
-        animais[raca2][2] += 1   
-    elif linha['raca'] == raca3:
-      if linha['idade'] <= 5:
-        animais[raca3][0] += 1
-      elif linha['idade'] <= 10:
-        animais[raca3][1] += 1          
-      else:
-        animais[raca3][2] += 1   
+    if linha['esporte_id'] == esporte1:
+        esportes[esporte1][0] += 1         
+    elif linha['esporte_id'] == esporte2:
+        esportes[esporte2][0] += 1     
 
   x = np.arange(len(faixas))  # the label locations
   width = 0.25  # the width of the bars
@@ -169,7 +154,7 @@ def grafico():
 
   fig, ax = plt.subplots(layout='constrained')
 
-  for attribute, measurement in animais.items():
+  for attribute, measurement in esportes.items():
       offset = width * multiplier
       rects = ax.bar(x + offset, measurement, width, label=attribute)
       ax.bar_label(rects, padding=3)
@@ -177,7 +162,7 @@ def grafico():
 
   # Add some text for labels, title and custom x-axis tick labels, etc.
   ax.set_ylabel('Quantidades')
-  ax.set_title('Gráfico Comparativo de Faixas Etárias')
+  ax.set_title('Gráfico Comparativo de Esportes por Quadras')
   ax.set_xticks(x + width, faixas)
   ax.legend(loc='upper left', ncols=3)
   ax.set_ylim(0, 10)
@@ -187,16 +172,15 @@ def grafico():
 # ----------------------------------- Programa Principal
 while True:
   if token: 
-    titulo(f"Cadastro de Animais do Zoo - Usuário {usuarioNome}", "=")
+    titulo(f"Agendamento de quadras - Usuário {usuarioNome}", "=")
   else:
-    titulo("Cadastro de Animais do Zoo", "=")
+    titulo("Agendamento de quadras", "=")
   print("1. Fazer Login")
-  print("2. Incluir Animais")
-  print("3. Listar Animais")
+  print("2. Incluir agendamento")
+  print("3. Listar agendamentos")
   print("4. Alterar Dados")
-  print("5. Excluir Animal")
-  print("6. Agrupar por Habitat")
-  print("7. Gráfico Relacionando Faixas Etárias")
+  print("5. Excluir agendamento")
+  print("7. Gráfico")
   print("8. Finalizar")
   opcao = int(input("Opção: "))
   if opcao == 1:
