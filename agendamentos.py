@@ -44,7 +44,7 @@ def inclusao():
 
   data_marcada = input("Data..: ")
   horario = input("Horário: ")
-  id_quadra = 1
+  id_quadra = int(input("Código da Quadra: "))
 
   response = requests.post("http://localhost:3000/agendamentos", 
     json={"data": data_marcada, "hora": horario, "quadra_id": id_quadra},
@@ -113,6 +113,37 @@ def exclusao():
   else:
     print("Agendamento Excluido |  obs: Soft Delete")
 
+def agrupar():
+  titulo("Agrupar por Quadra")
+
+  response = requests.get("http://localhost:3000/agendamentos")
+
+  if response.status_code != 200:
+    print("Erro... Não foi possível conectar com a API")
+    return
+  
+  dados = response.json()
+
+  contador_quadra1 = 0
+  contador_quadra2 = 0
+  contador_quadra3 = 0
+  contador_quadra4 = 0
+  
+  for linha in dados:
+    if linha['quadra_id'] == 1:
+        contador_quadra1 += 1         
+    elif linha['quadra_id'] == 2:
+        contador_quadra2 += 1   
+    elif linha['quadra_id'] == 3:
+        contador_quadra3 += 1
+    elif linha['quadra_id'] == 4:
+        contador_quadra4 += 1
+
+  print(f"Quadra 1: {contador_quadra1} agendamentos")
+  print(f"Quadra 2: {contador_quadra2} agendamentos")
+  print(f"Quadra 3: {contador_quadra3} agendamentos")
+  print(f"Quadra 4: {contador_quadra4} agendamentos")
+
 def grafico():
   titulo("Gráfico de Quadras")
     
@@ -165,6 +196,7 @@ while True:
   print("3. Listar agendamentos")
   print("4. Alterar Dados")
   print("5. Excluir agendamento")
+  print("6. agrupar por quadra")
   print("7. Gráfico")
   print("8. Finalizar")
   opcao = int(input("Opção: "))
@@ -178,6 +210,8 @@ while True:
     alteracao()
   elif opcao == 5:
     exclusao()
+  elif opcao == 6:
+    agrupar()
   elif opcao == 7:
     grafico()
   else:
