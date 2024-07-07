@@ -71,7 +71,7 @@ def listagem():
   dados = response.json()
 
   for linha in dados:
-    print(f"Código: {linha['id']} - Data de Reserva: {linha['data']} - Horário: {linha['hora']}")
+    print(f"Código: {linha['id']} - Data de Reserva: {linha['data']} - Horário: {linha['hora']:10s} -Quadra: {linha['quadra_id']} - Deleted: {linha['deleted']}")
     
 def alteracao():
   titulo("Alteração de Agendamento")
