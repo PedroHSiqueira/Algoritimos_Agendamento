@@ -96,7 +96,7 @@ def alteracao():
     print("Erro... Agendamento não encontrado")
     
 def exclusao():
-  titulo("Exclusão de Agendamento")
+  titulo("Exclusão de Esporte")
 
   if token == "":
     print("Erro... Você deve logar-se primeiro")
@@ -109,29 +109,13 @@ def exclusao():
   )
 
   if response.status_code == 200:
-    print("Ok... Agendamento excluído")
+    print("Agendamento excluído")
   else:
-    print("Erro... Agendamento não encontrado")
+    print("Agendamento Excluido |  obs: Soft Delete")
 
 def grafico():
   titulo("Gráfico de Quadras")
-
-  esporte1 = input("1ª Esporte: ")
-  esporte2 = input("2ª Esporte: ")
-  
-  if esporte1 == "volei":
-    esporte1 = 1
-  if esporte2 == "futebol":
-    esporte2 = 2
-
-  # (): significa que é uma tupla (característica: é imutável)
-  faixas = ("Volei", "Futebol", "Teste")
-  # {}: significa que é um dicionário (chave: valor)
-  esportes = {
-      esporte1: [0],
-      esporte2: [0]
-  }
-
+    
   response = requests.get("http://localhost:3000/quadras")
 
   if response.status_code != 200:
@@ -139,33 +123,34 @@ def grafico():
     return
   
   dados = response.json()
-
-#  print(dados)
-
+  
+  contador_volei = 0
+  contador_futebol = 0
+  contador_basquete = 0
+  contador_handebol = 0
+  
   for linha in dados:
-    if linha['esporte_id'] == esporte1:
-        esportes[esporte1][0] += 1         
-    elif linha['esporte_id'] == esporte2:
-        esportes[esporte2][0] += 1     
+    if linha['esporte_id'] == 1:
+        contador_volei += 1         
+    elif linha['esporte_id'] == 2:
+        contador_futebol += 1   
+    elif linha['esporte_id'] == 3:
+        contador_basquete += 1
+    elif linha['esporte_id'] == 4:
+        contador_handebol += 1
 
-  x = np.arange(len(faixas))  # the label locations
-  width = 0.25  # the width of the bars
-  multiplier = 0
+  fig, ax = plt.subplots()
 
-  fig, ax = plt.subplots(layout='constrained')
+  Jogos = ["Volei", "Futebol", "Basquete", "Handebol"]
+  counts = [contador_volei, contador_futebol, contador_basquete, contador_handebol]
+  bar_labels = ['red', 'blue', 'green', 'orange']
+  bar_colors = ['tab:red', 'tab:blue', 'tab:green', 'tab:orange']
 
-  for attribute, measurement in esportes.items():
-      offset = width * multiplier
-      rects = ax.bar(x + offset, measurement, width, label=attribute)
-      ax.bar_label(rects, padding=3)
-      multiplier += 1
+  ax.bar(Jogos, counts, label=bar_labels, color=bar_colors)
 
-  # Add some text for labels, title and custom x-axis tick labels, etc.
-  ax.set_ylabel('Quantidades')
-  ax.set_title('Gráfico Comparativo de Esportes por Quadras')
-  ax.set_xticks(x + width, faixas)
-  ax.legend(loc='upper left', ncols=3)
-  ax.set_ylim(0, 10)
+  ax.set_ylabel('Numero de Jogos')
+  ax.set_title('Esporte Por Quadra')
+  ax.legend(title='Quadra')
 
   plt.show()
 
